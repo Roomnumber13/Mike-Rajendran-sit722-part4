@@ -1,1 +1,43 @@
-# Your Solution
+version: '3'
+services:
+
+  db:
+    image: postgres:latest
+    container_name: db
+    environment:
+      POSTGRES_USER: sit722_part4_3uhl_user
+      POSTGRES_PASSWORD: AfvMpIfoABzgJ2XdsWYHLD8HHpItp6tc
+      POSTGRES_DB: sit722_part4_3uhl 
+    ports:
+      - "5432:5432"
+    restart: "on-failure"
+
+  book-catalog: 
+    platform: linux/amd64
+    image: book-catalog
+    build: 
+      context: ./book_catalog
+      dockerfile: Dockerfile
+    container_name: book-catalog
+    ports:
+      - "8000:8000"
+    environment:
+      - PORT=8000
+      - DATABASE_URL=postgresql://sit722_part4_3uhl_user:AfvMpIfoABzgJ2XdsWYHLD8HHpItp6tc@dpg-crgkgd3v2p9s73acv8a0-a.singapore-postgres.render.com/sit722_part4_3uhl
+    restart: "on-failure"
+
+  inventory-management: 
+    platform: linux/amd64  
+    image: inventory-management
+    build: 
+      context: ./inventory_management
+      dockerfile: Dockerfile
+    container_name: inventory-management
+    ports:
+      - "8002:8002"
+    environment:
+      - PORT=8002
+      - DATABASE_URL=postgresql://sit722_part4_3uhl_user:AfvMpIfoABzgJ2XdsWYHLD8HHpItp6tc@dpg-crgkgd3v2p9s73acv8a0-a.singapore-postgres.render.com/sit722_part4_3uhl
+    depends_on:
+      - db
+    restart: "on-failure"
