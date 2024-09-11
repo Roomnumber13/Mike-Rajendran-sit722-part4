@@ -1,1 +1,77 @@
-# Your Solution
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: book-catalog
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: book-catalog
+  template:
+    metadata:
+      labels:
+        app: book-catalog
+    spec:
+      containers:
+      - name: book-catalog
+        image: s224246429.azurecr.io/book-catalog:1
+        ports:
+        - containerPort: 8000
+        env:
+        - name: DATABASE_URL
+          value: "postgresql://sit722_part4_3uhl_user:AfvMpIfoABzgJ2XdsWYHLD8HHpItp6tc@dpg-crgkgd3v2p9s73acv8a0-a.singapore-postgres.render.com/sit722_part4_3uhl"
+
+---
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: inventory-management
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: inventory-management
+  template:
+    metadata:
+      labels:
+        app: inventory-management
+    spec:
+      containers:
+      - name: inventory-management
+        image: s224246429.azurecr.io/inventory-management:1
+        ports:
+        - containerPort: 8002
+        env:
+        - name: DATABASE_URL
+          value: "postgresql://sit722_part4_3uhl_user:AfvMpIfoABzgJ2XdsWYHLD8HHpItp6tc@dpg-crgkgd3v2p9s73acv8a0-a.singapore-postgres.render.com/sit722_part4_3uhl"
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: book-catalog-service
+spec:
+  selector:
+    app: book-catalog
+  ports:
+    - protocol: TCP
+      port: 8000
+      targetPort: 8000
+  type: LoadBalancer
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: inventory-management-service
+spec:
+  selector:
+    app: inventory-management
+  ports:
+    - protocol: TCP
+      port: 8002
+      targetPort: 8002
+  type: LoadBalancer
